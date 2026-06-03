@@ -1,0 +1,7 @@
+scheme_key,scheme_code,scheme_name,records,latest_date,latest_nav,file,status
+hdfc_top100,125497,HDFC Top 100 Direct Growth,3092,2026-06-02,193.1295,data\raw\nav_hdfc_top100.csv,SUCCESS
+sbi_bluechip,119551,SBI Bluechip Direct Growth,3237,2026-06-02,104.7663,data\raw\nav_sbi_bluechip.csv,SUCCESS
+icici_bluechip,120503,ICICI Pru Bluechip Direct Growth,3308,2026-06-02,103.5959,data\raw\nav_icici_bluechip.csv,SUCCESS
+nippon_largecap,118632,Nippon India Large Cap Direct Growth,3299,2026-06-02,97.4783,data\raw\nav_nippon_largecap.csv,SUCCESS
+axis_bluechip,119092,Axis Bluechip Direct Growth,3566,2026-06-02,6158.9665,data\raw\nav_axis_bluechip.csv,SUCCESS
+kotak_bluechip,120841,Kotak Bluechip Direct Growth,3302,2026-06-02,246.8566,data\raw\nav_kotak_bluechip.csv,SUCCESS
