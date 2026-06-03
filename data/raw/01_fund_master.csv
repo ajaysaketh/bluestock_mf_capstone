@@ -1,0 +1,41 @@
+amfi_code,scheme_name,fund_house,category,sub_category,plan,benchmark,expense_ratio_pct,exit_load_pct,fund_manager,risk_category,sebi_category_code,launch_date
+125497,HDFC Top 100 Fund Direct Growth,HDFC Mutual Fund,Equity,Large Cap,Direct,Nifty 100 TRI,0.95,1.0,Rahul Baijal,Very High,EC01,2013-01-01
+119551,SBI Blue Chip Fund Direct Growth,SBI Mutual Fund,Equity,Large Cap,Direct,BSE 100 TRI,0.89,1.0,Sohini Andani,Very High,EC01,2013-04-01
+120503,ICICI Prudential Bluechip Fund Direct Growth,ICICI Prudential Mutual Fund,Equity,Large Cap,Direct,Nifty 100 TRI,1.05,1.0,Anish Tawakley,Very High,EC01,2013-06-30
+118632,Nippon India Large Cap Fund Direct Growth,Nippon India Mutual Fund,Equity,Large Cap,Direct,Nifty 100 TRI,1.1,1.0,Sailesh Raj Bhan,Very High,EC01,2013-09-28
+119092,Axis Bluechip Fund Direct Growth,Axis Mutual Fund,Equity,Large Cap,Direct,Nifty 100 TRI,0.55,1.0,Shreyash Devalkar,Very High,EC01,2013-12-27
+120841,Kotak Bluechip Fund Direct Growth,Kotak Mahindra Mutual Fund,Equity,Large Cap,Direct,Nifty 100 TRI,0.72,1.0,Harsha Upadhyaya,Very High,EC01,2014-03-27
+125354,Mirae Asset Large Cap Fund Direct Growth,Mirae Asset Mutual Fund,Equity,Large Cap,Direct,Nifty 100 TRI,0.54,1.0,Gaurav Misra,Very High,EC01,2014-06-25
+120716,DSP Top 100 Equity Fund Direct Growth,DSP Mutual Fund,Equity,Large Cap,Direct,BSE 100 TRI,1.25,1.0,Rohit Singhania,Very High,EC01,2014-09-23
+125494,HDFC Mid-Cap Opportunities Fund Direct Growth,HDFC Mutual Fund,Equity,Mid Cap,Direct,Nifty Midcap 150 TRI,0.87,1.0,Chirag Setalvad,Very High,EC02,2014-12-22
+119847,SBI Magnum Midcap Fund Direct Growth,SBI Mutual Fund,Equity,Mid Cap,Direct,Nifty Midcap 150 TRI,0.92,1.0,Sohini Andani,Very High,EC02,2015-03-22
+120505,ICICI Prudential Midcap Fund Direct Growth,ICICI Prudential Mutual Fund,Equity,Mid Cap,Direct,Nifty Midcap 150 TRI,1.02,1.0,Mrinal Singh,Very High,EC02,2015-06-20
+118989,Nippon India Growth Fund Direct Growth,Nippon India Mutual Fund,Equity,Mid Cap,Direct,Nifty Midcap 150 TRI,1.15,1.0,Manish Gunwani,Very High,EC02,2015-09-18
+120846,Kotak Emerging Equity Fund Direct Growth,Kotak Mahindra Mutual Fund,Equity,Mid Cap,Direct,Nifty Midcap 150 TRI,0.68,1.0,Pankaj Tibrewal,Very High,EC02,2015-12-17
+125356,Mirae Asset Emerging Bluechip Direct Growth,Mirae Asset Mutual Fund,Equity,Mid Cap,Direct,Nifty Midcap 150 TRI,0.69,1.0,Neelesh Surana,Very High,EC02,2016-03-16
+120717,DSP Midcap Fund Direct Growth,DSP Mutual Fund,Equity,Mid Cap,Direct,Nifty Midcap 150 TRI,0.87,1.0,Vinit Sambre,Very High,EC02,2016-06-14
+125358,Axis Midcap Fund Direct Growth,Axis Mutual Fund,Equity,Mid Cap,Direct,Nifty Midcap 150 TRI,0.52,1.0,Shreyash Devalkar,Very High,EC02,2016-09-12
+125496,HDFC Small Cap Fund Direct Growth,HDFC Mutual Fund,Equity,Small Cap,Direct,Nifty Smallcap 250 TRI,0.65,1.0,Chirag Setalvad,Very High,EC03,2016-12-11
+119849,SBI Small Cap Fund Direct Growth,SBI Mutual Fund,Equity,Small Cap,Direct,BSE SmallCap TRI,0.72,1.0,R Srinivasan,Very High,EC03,2017-03-11
+120507,ICICI Prudential Smallcap Fund Direct Growth,ICICI Prudential Mutual Fund,Equity,Small Cap,Direct,BSE SmallCap TRI,1.05,1.0,Harish Bihani,Very High,EC03,2017-06-09
+118991,Nippon India Small Cap Fund Direct Growth,Nippon India Mutual Fund,Equity,Small Cap,Direct,BSE SmallCap TRI,0.82,1.0,Samir Rachh,Very High,EC03,2017-09-07
+120848,Kotak Small Cap Fund Direct Growth,Kotak Mahindra Mutual Fund,Equity,Small Cap,Direct,BSE SmallCap TRI,0.61,1.0,Pankaj Tibrewal,Very High,EC03,2017-12-06
+125360,Axis Small Cap Fund Direct Growth,Axis Mutual Fund,Equity,Small Cap,Direct,Nifty Smallcap 250 TRI,0.53,1.0,Anupam Tiwari,Very High,EC03,2018-03-06
+125499,HDFC ELSS Tax Saver Direct Growth,HDFC Mutual Fund,Equity,ELSS,Direct,Nifty 500 TRI,1.1,0.0,Roshi Jain,Very High,EC07,2018-06-04
+119553,SBI Long Term Equity Fund Direct Growth,SBI Mutual Fund,Equity,ELSS,Direct,BSE 500 TRI,1.05,0.0,Dinesh Ahuja,Very High,EC07,2018-09-02
+120509,ICICI Prudential Long Term Equity Direct Growth,ICICI Prudential Mutual Fund,Equity,ELSS,Direct,BSE 500 TRI,1.18,0.0,George Heber Joseph,Very High,EC07,2018-12-01
+125362,Mirae Asset Tax Saver Fund Direct Growth,Mirae Asset Mutual Fund,Equity,ELSS,Direct,BSE 200 TRI,0.55,0.0,Neelesh Surana,Very High,EC07,2019-03-01
+125501,HDFC Flexi Cap Fund Direct Growth,HDFC Mutual Fund,Equity,Flexi Cap,Direct,Nifty 500 TRI,0.9,1.0,Roshi Jain,Very High,EC05,2019-05-30
+119555,SBI Flexicap Fund Direct Growth,SBI Mutual Fund,Equity,Flexi Cap,Direct,BSE 500 TRI,0.95,1.0,R Srinivasan,Very High,EC05,2019-08-28
+120511,ICICI Prudential Flexicap Fund Direct Growth,ICICI Prudential Mutual Fund,Equity,Flexi Cap,Direct,BSE 500 TRI,0.99,1.0,S Naren,Very High,EC05,2019-11-26
+120850,Kotak Flexicap Fund Direct Growth,Kotak Mahindra Mutual Fund,Equity,Flexi Cap,Direct,Nifty 500 TRI,0.6,1.0,Harsha Upadhyaya,Very High,EC05,2020-02-24
+119000,HDFC Liquid Fund Direct Growth,HDFC Mutual Fund,Debt,Liquid,Direct,CRISIL Liquid Fund Index,0.2,0.0,Anil Bamboli,Low,DC01,2020-05-24
+119001,SBI Liquid Fund Direct Growth,SBI Mutual Fund,Debt,Liquid,Direct,CRISIL Liquid Fund Index,0.18,0.0,Rajeev Radhakrishnan,Low,DC01,2020-08-22
+119002,ICICI Prudential Liquid Fund Direct Growth,ICICI Prudential Mutual Fund,Debt,Liquid,Direct,CRISIL Liquid Fund Index,0.2,0.0,Rohan Maru,Low,DC01,2020-11-20
+119003,Nippon India Liquid Fund Direct Growth,Nippon India Mutual Fund,Debt,Liquid,Direct,CRISIL Liquid Fund Index,0.22,0.0,Anju Chhajer,Low,DC01,2021-02-18
+119004,HDFC Short Term Debt Fund Direct Growth,HDFC Mutual Fund,Debt,Short Duration,Direct,CRISIL Short Term Bond Index,0.35,0.0,Anil Bamboli,Moderate,DC03,2021-05-19
+119005,SBI Short Term Debt Fund Direct Growth,SBI Mutual Fund,Debt,Short Duration,Direct,CRISIL Short Term Bond Index,0.38,0.0,Rajeev Radhakrishnan,Moderate,DC03,2021-08-17
+119006,HDFC Hybrid Equity Fund Direct Growth,HDFC Mutual Fund,Hybrid,Aggressive Hybrid,Direct,CRISIL Hybrid 35+65 Index,0.8,1.0,Chirag Setalvad,High,HC01,2021-11-15
+119007,ICICI Prudential Equity & Debt Fund Direct Growth,ICICI Prudential Mutual Fund,Hybrid,Aggressive Hybrid,Direct,CRISIL Hybrid 35+65 Index,1.1,1.0,Sankaran Naren,High,HC01,2022-02-13
+119008,SBI Equity Hybrid Fund Direct Growth,SBI Mutual Fund,Hybrid,Aggressive Hybrid,Direct,CRISIL Hybrid 35+65 Index,0.9,1.0,R Srinivasan,High,HC01,2022-05-14
+119009,Mirae Asset Hybrid Equity Fund Direct Growth,Mirae Asset Mutual Fund,Hybrid,Aggressive Hybrid,Direct,CRISIL Hybrid 35+65 Index,0.58,1.0,Neelesh Surana,High,HC01,2022-08-12
