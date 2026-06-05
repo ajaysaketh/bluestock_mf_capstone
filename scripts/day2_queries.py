@@ -1,0 +1,106 @@
+"""
+day2_queries.py  —  Day 2 Task 6: Run 10 SQL analytical queries
+Run: python scripts/day2_queries.py
+"""
+import sqlite3
+import pandas as pd
+from pathlib import Path
+
+DB_PATH = Path("data/db/bluestock_mf.db")
+conn = sqlite3.connect(DB_PATH)
+
+# ── Check tables ──────────────────────────────────────────────────────────────
+print("=" * 60)
+print("  TABLES IN DATABASE")
+print("=" * 60)
+tables = conn.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()
+for t in tables:
+    count = conn.execute(f"SELECT COUNT(*) FROM {t[0]}").fetchone()[0]
+    cols  = [c[1] for c in conn.execute(f"PRAGMA table_info({t[0]})").fetchall()]
+    print(f"  {t[0]:<25} {count:>6} rows  |  cols: {cols[:5]}")
+
+# ── 10 Queries ────────────────────────────────────────────────────────────────
+QUERIES = {
+    "Q1. Top 5 Fund Houses by AUM": """
+        SELECT fund_house, MAX(aum_crore) as max_aum_crore
+        FROM fact_aum
+        GROUP BY fund_house
+        ORDER BY max_aum_crore DESC
+        LIMIT 5
+    """,
+    "Q2. Average NAV per Month (last 12)": """
+        SELECT substr(date,1,7) as month,
+               ROUND(AVG(nav),2) as avg_nav
+        FROM fact_nav
+        GROUP BY month
+        ORDER BY month DESC
+        LIMIT 12
+    """,
+    "Q3. SIP Inflow by Year": """
+        SELECT substr(month,1,4) as year,
+               ROUND(SUM(sip_inflow_crore),0) as total_sip_crore
+        FROM fact_sip_industry
+        GROUP BY year
+        ORDER BY year
+    """,
+    "Q4. Transactions by State": """
+        SELECT state,
+               COUNT(*) as tx_count,
+               ROUND(SUM(amount_inr)/1e7,2) as total_crore
+        FROM fact_transactions
+        GROUP BY state
+        ORDER BY total_crore DESC
+    """,
+    "Q5. Funds with Expense Ratio < 1%": """
+        SELECT scheme_name, expense_ratio_pct
+        FROM dim_fund
+        WHERE expense_ratio_pct < 1.0
+        ORDER BY expense_ratio_pct
+    """,
+    "Q6. Top 5 Funds by 3yr Return": """
+        SELECT scheme_name, return_3yr_pct
+        FROM fact_performance
+        ORDER BY return_3yr_pct DESC
+        LIMIT 5
+    """,
+    "Q7. Best Sharpe Ratio Funds": """
+        SELECT scheme_name, sharpe_ratio, sortino_ratio
+        FROM fact_performance
+        ORDER BY sharpe_ratio DESC
+        LIMIT 5
+    """,
+    "Q8. SIP vs Lumpsum vs Redemption Split": """
+        SELECT transaction_type,
+               COUNT(*) as count,
+               ROUND(SUM(amount_inr)/1e7,2) as total_crore
+        FROM fact_transactions
+        GROUP BY transaction_type
+    """,
+    "Q9. Fund Count by Category": """
+        SELECT category, sub_category, COUNT(*) as num_funds
+        FROM dim_fund
+        GROUP BY category, sub_category
+        ORDER BY category, num_funds DESC
+    """,
+    "Q10. Top 10 Stock Holdings by Avg Weight": """
+        SELECT stock_name, sector,
+               ROUND(AVG(weight_pct),2) as avg_weight_pct
+        FROM fact_portfolio
+        GROUP BY stock_name
+        ORDER BY avg_weight_pct DESC
+        LIMIT 10
+    """,
+}
+
+for title, query in QUERIES.items():
+    print(f"\n{'='*60}")
+    print(f"  {title}")
+    print("="*60)
+    try:
+        df = pd.read_sql(query.strip(), conn)
+        print(df.to_string(index=False))
+    except Exception as e:
+        print(f"  ERROR: {e}")
+
+conn.close()
+print("\n✅ All 10 queries complete!")
