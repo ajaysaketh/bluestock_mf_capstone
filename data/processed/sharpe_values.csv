@@ -1,41 +1,41 @@
-amfi_code,sharpe_ratio,volatility_pct,scheme_name,sub_category
-118632,0.5832,153.67,Nippon India Large Cap Fund Direct Growth,Large Cap
-118989,1.2032,181.81,Nippon India Growth Fund Direct Growth,Mid Cap
-118991,1.1169,302.0,Nippon India Small Cap Fund Direct Growth,Small Cap
-119000,0.3136,20.92,HDFC Liquid Fund Direct Growth,Liquid
-119001,0.33,21.88,SBI Liquid Fund Direct Growth,Liquid
-119002,0.3138,21.07,ICICI Prudential Liquid Fund Direct Growth,Liquid
-119003,0.3276,21.94,Nippon India Liquid Fund Direct Growth,Liquid
-119004,0.5135,42.92,HDFC Short Term Debt Fund Direct Growth,Short Duration
-119005,0.4343,34.4,SBI Short Term Debt Fund Direct Growth,Short Duration
-119006,0.9157,108.74,HDFC Hybrid Equity Fund Direct Growth,Aggressive Hybrid
-119007,0.721,91.64,ICICI Prudential Equity & Debt Fund Direct Growth,Aggressive Hybrid
-119008,0.8662,108.17,SBI Equity Hybrid Fund Direct Growth,Aggressive Hybrid
-119009,0.8383,105.91,Mirae Asset Hybrid Equity Fund Direct Growth,Aggressive Hybrid
-119092,0.5312,104.84,Axis Bluechip Fund Direct Growth,Large Cap
-119551,0.9182,126.22,SBI Blue Chip Fund Direct Growth,Large Cap
-119553,0.8115,155.15,SBI Long Term Equity Fund Direct Growth,ELSS
-119555,0.4655,126.88,SBI Flexicap Fund Direct Growth,Flexi Cap
-119847,0.5809,146.25,SBI Magnum Midcap Fund Direct Growth,Mid Cap
-119849,0.8888,170.62,SBI Small Cap Fund Direct Growth,Small Cap
-120503,0.8726,139.62,ICICI Prudential Bluechip Fund Direct Growth,Large Cap
-120505,1.1332,182.47,ICICI Prudential Midcap Fund Direct Growth,Mid Cap
-120507,1.1308,177.14,ICICI Prudential Smallcap Fund Direct Growth,Small Cap
-120509,0.4376,104.69,ICICI Prudential Long Term Equity Direct Growth,ELSS
-120511,1.0397,144.64,ICICI Prudential Flexicap Fund Direct Growth,Flexi Cap
-120716,0.9743,121.28,DSP Top 100 Equity Fund Direct Growth,Large Cap
-120717,1.0173,146.56,DSP Midcap Fund Direct Growth,Mid Cap
-120841,0.5363,135.07,Kotak Bluechip Fund Direct Growth,Large Cap
-120846,1.204,179.13,Kotak Emerging Equity Fund Direct Growth,Mid Cap
-120848,1.1835,209.09,Kotak Small Cap Fund Direct Growth,Small Cap
-120850,0.4153,108.12,Kotak Flexicap Fund Direct Growth,Flexi Cap
-125354,0.9893,152.18,Mirae Asset Large Cap Fund Direct Growth,Large Cap
-125356,0.9554,159.72,Mirae Asset Emerging Bluechip Direct Growth,Mid Cap
-125358,1.2696,187.08,Axis Midcap Fund Direct Growth,Mid Cap
-125360,0.5763,154.81,Axis Small Cap Fund Direct Growth,Small Cap
-125362,0.663,139.96,Mirae Asset Tax Saver Fund Direct Growth,ELSS
-125494,0.6399,125.86,HDFC Mid-Cap Opportunities Fund Direct Growth,Mid Cap
-125496,0.9968,165.55,HDFC Small Cap Fund Direct Growth,Small Cap
-125497,1.2254,158.12,HDFC Top 100 Fund Direct Growth,Large Cap
-125499,1.2701,177.57,HDFC ELSS Tax Saver Direct Growth,ELSS
-125501,1.0169,144.4,HDFC Flexi Cap Fund Direct Growth,Flexi Cap
+amfi_code,scheme_name,sharpe_ratio,volatility_pct
+118632,Nippon India Large Cap Fund Direct Growth,0.3427,98.9718
+118989,Nippon India Growth Fund Direct Growth,0.7661,119.9061
+118991,Nippon India Small Cap Fund Direct Growth,0.7029,192.7944
+119000,HDFC Liquid Fund Direct Growth,-0.0584,15.5774
+119001,SBI Liquid Fund Direct Growth,-0.0382,16.2467
+119002,ICICI Prudential Liquid Fund Direct Growth,-0.0571,15.6562
+119003,Nippon India Liquid Fund Direct Growth,-0.039,16.2467
+119004,HDFC Short Term Debt Fund Direct Growth,0.1904,30.2932
+119005,SBI Short Term Debt Fund Direct Growth,0.1173,24.4761
+119006,HDFC Hybrid Equity Fund Direct Growth,0.5786,74.0123
+119007,ICICI Prudential Equity & Debt Fund Direct Growth,0.4028,61.4838
+119008,SBI Equity Hybrid Fund Direct Growth,0.5199,73.0619
+119009,Mirae Asset Hybrid Equity Fund Direct Growth,0.4797,70.8448
+119092,Axis Bluechip Fund Direct Growth,0.2743,68.1599
+119551,SBI Blue Chip Fund Direct Growth,0.5777,84.9848
+119553,SBI Long Term Equity Fund Direct Growth,0.4841,99.6464
+119555,SBI Flexicap Fund Direct Growth,0.2757,83.6386
+119847,SBI Magnum Midcap Fund Direct Growth,0.3488,96.5502
+119849,SBI Small Cap Fund Direct Growth,0.5367,110.7236
+120503,ICICI Prudential Bluechip Fund Direct Growth,0.5232,91.9067
+120505,ICICI Prudential Midcap Fund Direct Growth,0.7095,118.8657
+120507,ICICI Prudential Smallcap Fund Direct Growth,0.7081,116.5436
+120509,ICICI Prudential Long Term Equity Direct Growth,0.23,68.0313
+120511,ICICI Prudential Flexicap Fund Direct Growth,0.6557,96.8796
+120716,DSP Top 100 Equity Fund Direct Growth,0.6034,82.9177
+120717,DSP Midcap Fund Direct Growth,0.6537,98.5486
+120841,Kotak Bluechip Fund Direct Growth,0.309,87.4879
+120846,Kotak Emerging Equity Fund Direct Growth,0.7745,118.9549
+120848,Kotak Small Cap Fund Direct Growth,0.7427,134.7675
+120850,Kotak Flexicap Fund Direct Growth,0.228,70.788
+125354,Mirae Asset Large Cap Fund Direct Growth,0.6122,100.449
+125356,Mirae Asset Emerging Bluechip Direct Growth,0.5885,104.8236
+125358,Axis Midcap Fund Direct Growth,0.8173,123.5805
+125360,Axis Small Cap Fund Direct Growth,0.3672,103.0819
+125362,Mirae Asset Tax Saver Fund Direct Growth,0.3972,89.7333
+125494,HDFC Mid-Cap Opportunities Fund Direct Growth,0.365,82.0344
+125496,HDFC Small Cap Fund Direct Growth,0.6399,109.9999
+125497,HDFC Top 100 Fund Direct Growth,0.7758,105.2217
+125499,HDFC ELSS Tax Saver Direct Growth,0.8061,117.515
+125501,HDFC Flexi Cap Fund Direct Growth,0.6364,96.1694

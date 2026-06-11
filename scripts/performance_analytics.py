@@ -1,204 +1,249 @@
 """
-performance_analytics.py  —  Day 4: Fund Performance Analytics
-Run: python scripts/performance_analytics.py
+performance_analytics.py  —  Bluestock MF Capstone | Day 4
+Computes all key performance and risk metrics from NAV history.
+
+Tasks:
+  1. Daily returns for all 40 funds
+  2. CAGR for 1yr / 3yr / 5yr
+  3. Sharpe Ratio  (Rf = 6.5%)
+  4. Sortino Ratio
+  5. Alpha & Beta  (OLS vs Nifty 100)
+  6. Maximum Drawdown
+  7. Fund Scorecard (composite 0-100)
+  8. Benchmark comparison chart
+
+Usage:
+    python scripts/performance_analytics.py
 """
+
+import os
 import warnings
-warnings.filterwarnings('ignore')
+warnings.filterwarnings("ignore")
 import numpy as np
 import pandas as pd
 import matplotlib
-matplotlib.use('Agg')
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-import seaborn as sns
 from scipy import stats
-from pathlib import Path
 
-RAW  = Path(r'C:\Users\ajays\bluestock_mf_capstone\data\raw')
-PROC = Path(r'C:\Users\ajays\bluestock_mf_capstone\data\processed')
-FIGS = Path(r'C:\Users\ajays\bluestock_mf_capstone\reports')
-PROC.mkdir(exist_ok=True)
-FIGS.mkdir(exist_ok=True)
+ROOT     = os.getcwd()
+RAW_DIR  = os.path.join(ROOT, "data", "raw")
+PROC_DIR = os.path.join(ROOT, "data", "processed")
+REP_DIR  = os.path.join(ROOT, "reports")
+os.makedirs(PROC_DIR, exist_ok=True)
+os.makedirs(REP_DIR,  exist_ok=True)
 
-RF = 0.065
-TRADING_DAYS = 252
+RF            = 0.065          # RBI repo rate proxy
+TRADING_DAYS  = 252
+SEP           = "=" * 60
 
-print("="*60)
-print("  DAY 4 — Fund Performance Analytics")
-print("="*60)
+print(SEP)
+print("  BLUESTOCK MF CAPSTONE | Day 4 — Performance Analytics")
+print(SEP)
 
-# ── Load & fix column names automatically ─────────────────────────────────────
-print("\nLoading data...")
-nav = pd.read_csv(RAW / '02_nav_history.csv')
-print(f"  NAV columns found: {nav.columns.tolist()}")
+# ── Load data ─────────────────────────────────────────────────
+nav = pd.read_csv(os.path.join(RAW_DIR, "02_nav_history.csv"), low_memory=False)
+if "tdate" in nav.columns:
+    nav.rename(columns={"tdate": "date", "tnav": "nav"}, inplace=True)
+nav["date"]      = pd.to_datetime(nav["date"], errors="coerce")
+nav["amfi_code"] = nav["amfi_code"].astype(str)
+nav["nav"]       = pd.to_numeric(nav["nav"], errors="coerce")
+nav.sort_values(["amfi_code", "date"], inplace=True)
+nav.reset_index(drop=True, inplace=True)
 
-# Auto-detect and rename columns
-col_map = {}
-for col in nav.columns:
-    cl = col.lower().strip()
-    if cl in ('date','nav_date','navdate','trade_date'): col_map[col] = 'date'
-    elif cl in ('nav','net_asset_value','nav_value'):    col_map[col] = 'nav'
-    elif cl in ('amfi_code','scheme_code','code','amficode'): col_map[col] = 'amfi_code'
-nav.rename(columns=col_map, inplace=True)
-print(f"  Renamed columns: {nav.columns.tolist()}")
+fm = pd.read_csv(os.path.join(RAW_DIR, "01_fund_master.csv"))
+fm["amfi_code"] = fm["amfi_code"].astype(str)
 
-nav['date'] = pd.to_datetime(nav['date'], errors='coerce')
-nav['nav']  = pd.to_numeric(nav['nav'],  errors='coerce')
-nav['amfi_code'] = nav['amfi_code'].astype(str)
-nav = nav.dropna(subset=['date','nav'])
-nav = nav.sort_values(['amfi_code','date']).reset_index(drop=True)
+bench = pd.read_csv(os.path.join(RAW_DIR, "10_benchmark_indices.csv"), low_memory=False)
+bench["date"] = pd.to_datetime(bench["date"] if "date" in bench.columns
+                               else bench.columns[0], errors="coerce")
+# Find nifty100 column
+nifty_col = next((c for c in bench.columns if "100" in c.lower() or "nifty" in c.lower()), bench.columns[1])
+bench = bench[["date", nifty_col]].rename(columns={nifty_col: "nifty100"})
+bench["nifty100"] = pd.to_numeric(bench["nifty100"], errors="coerce")
+bench.dropna(inplace=True)
+bench.sort_values("date", inplace=True)
+bench["bench_return"] = bench["nifty100"].pct_change()
 
-fm    = pd.read_csv(RAW / '01_fund_master.csv')
-fm['amfi_code'] = fm['amfi_code'].astype(str)
-bench = pd.read_csv(RAW / '10_benchmark_indices.csv')
-bench_col_map = {}
-for col in bench.columns:
-    if col.lower().strip() in ('date','trade_date','nav_date'):
-        bench_col_map[col] = 'date'
-bench.rename(columns=bench_col_map, inplace=True)
-bench['date'] = pd.to_datetime(bench['date'], errors='coerce')
+print(f"  NAV rows   : {len(nav):,}")
+print(f"  Funds      : {nav['amfi_code'].nunique()}")
+print(f"  Bench rows : {len(bench):,}")
 
-print(f"  NAV records : {len(nav):,}")
-print(f"  Funds       : {len(fm)}")
-print(f"  Bench cols  : {bench.columns.tolist()}")
+# ── Task 1: Daily returns ──────────────────────────────────────
+print(f"\n--- Task 1: Daily Returns ---")
+nav["daily_return"] = nav.groupby("amfi_code")["nav"].pct_change()
+nav.to_csv(os.path.join(PROC_DIR, "returns_computed.csv"), index=False)
+print(f"  returns_computed.csv saved  {len(nav):,} rows")
 
-# ── Task 1: Daily Returns ─────────────────────────────────────────────────────
-print("\n--- Task 1: Daily Returns ---")
-nav['daily_return'] = nav.groupby('amfi_code')['nav'].pct_change()
-nav[['amfi_code','date','nav','daily_return']].to_csv(PROC / 'returns_computed.csv', index=False)
-print(f"  ✅ returns_computed.csv  {len(nav):,} rows")
+# ── Helper: CAGR ──────────────────────────────────────────────
+def compute_cagr(nav_series, years):
+    nav_series = nav_series.dropna()
+    if len(nav_series) < 2:
+        return np.nan
+    n  = min(int(years * TRADING_DAYS), len(nav_series) - 1)
+    v0 = nav_series.iloc[-n-1]
+    v1 = nav_series.iloc[-1]
+    if v0 <= 0:
+        return np.nan
+    return round(((v1 / v0) ** (1 / years) - 1) * 100, 4)
 
-# ── Task 2: CAGR ──────────────────────────────────────────────────────────────
-print("\n--- Task 2: CAGR ---")
-def cagr(grp, years):
-    grp = grp.sort_values('date')
-    end = grp['date'].max()
-    start = end - pd.DateOffset(years=years)
-    s = grp[grp['date'] >= start]
-    if len(s) < 2: return np.nan
-    n = (s['date'].iloc[-1] - s['date'].iloc[0]).days / 365.25
-    if n <= 0 or s['nav'].iloc[0] <= 0: return np.nan
-    return round(((s['nav'].iloc[-1]/s['nav'].iloc[0])**(1/n)-1)*100, 2)
+# ── Task 2: CAGR ──────────────────────────────────────────────
+print(f"\n--- Task 2: CAGR ---")
+cagr_rows = []
+for code, grp in nav.groupby("amfi_code"):
+    cagr_rows.append({
+        "amfi_code":    code,
+        "cagr_1yr_pct": compute_cagr(grp["nav"], 1),
+        "cagr_3yr_pct": compute_cagr(grp["nav"], 3),
+        "cagr_5yr_pct": compute_cagr(grp["nav"], 5),
+    })
+cagr_df = pd.DataFrame(cagr_rows)
+cagr_df.to_csv(os.path.join(PROC_DIR, "cagr_report.csv"), index=False)
+print(f"  cagr_report.csv saved")
+print(cagr_df.dropna().head(5).to_string(index=False))
 
-rows = []
-for code, g in nav.groupby('amfi_code'):
-    rows.append({'amfi_code':code,'cagr_1yr':cagr(g,1),'cagr_3yr':cagr(g,3),'cagr_5yr':cagr(g,5)})
-cagr_df = pd.DataFrame(rows).merge(fm[['amfi_code','scheme_name','sub_category','fund_house']], on='amfi_code', how='left')
-cagr_df.to_csv(PROC / 'cagr_report.csv', index=False)
-print(f"  ✅ cagr_report.csv  {len(cagr_df)} rows")
-print(cagr_df.nlargest(5,'cagr_3yr')[['scheme_name','cagr_1yr','cagr_3yr','cagr_5yr']].to_string(index=False))
-
-# ── Task 3: Sharpe ────────────────────────────────────────────────────────────
-print("\n--- Task 3: Sharpe Ratio ---")
+# ── Task 3: Sharpe Ratio ──────────────────────────────────────
+print(f"\n--- Task 3: Sharpe Ratio ---")
 daily_rf = RF / TRADING_DAYS
-rows = []
-for code, g in nav.groupby('amfi_code'):
-    r = g['daily_return'].dropna()
-    if len(r) < 30: continue
-    sharpe = (r - daily_rf).mean() / r.std() * np.sqrt(TRADING_DAYS)
-    rows.append({'amfi_code':code,'sharpe_ratio':round(sharpe,4),'volatility_pct':round(r.std()*np.sqrt(TRADING_DAYS)*100,2)})
-sharpe_df = pd.DataFrame(rows).merge(fm[['amfi_code','scheme_name','sub_category']], on='amfi_code', how='left')
-sharpe_df.to_csv(PROC / 'sharpe_values.csv', index=False)
-print(f"  ✅ sharpe_values.csv  {len(sharpe_df)} rows")
-print(sharpe_df.nlargest(5,'sharpe_ratio')[['scheme_name','sharpe_ratio','volatility_pct']].to_string(index=False))
+sharpe_rows = []
+for code, grp in nav.groupby("amfi_code"):
+    r = grp["daily_return"].dropna()
+    if len(r) < 30:
+        continue
+    excess = r.mean() - daily_rf
+    std    = r.std()
+    sharpe = round((excess / std * np.sqrt(TRADING_DAYS)), 4) if std > 0 else 0
+    vol    = round(r.std() * np.sqrt(TRADING_DAYS) * 100, 4)
+    name   = fm[fm["amfi_code"] == code]["scheme_name"].values
+    sharpe_rows.append({
+        "amfi_code":      code,
+        "scheme_name":    name[0] if len(name) else code,
+        "sharpe_ratio":   sharpe,
+        "volatility_pct": vol,
+    })
+sharpe_df = pd.DataFrame(sharpe_rows)
+sharpe_df.to_csv(os.path.join(PROC_DIR, "sharpe_values.csv"), index=False)
+print(f"  sharpe_values.csv saved  {len(sharpe_df)} funds")
+print(f"  Top 5 by Sharpe:")
+print(sharpe_df.nlargest(5, "sharpe_ratio")[["scheme_name","sharpe_ratio","volatility_pct"]].to_string(index=False))
 
-# ── Task 4: Sortino ───────────────────────────────────────────────────────────
-print("\n--- Task 4: Sortino Ratio ---")
-rows = []
-for code, g in nav.groupby('amfi_code'):
-    r = g['daily_return'].dropna()
-    if len(r) < 30: continue
-    down_std = r[r < 0].std() * np.sqrt(TRADING_DAYS)
-    sortino  = ((r - daily_rf).mean() * TRADING_DAYS / down_std) if down_std > 0 else np.nan
-    rows.append({'amfi_code':code,'sortino_ratio':round(sortino,4)})
-sortino_df = pd.DataFrame(rows).merge(fm[['amfi_code','scheme_name','sub_category']], on='amfi_code', how='left')
-sortino_df.to_csv(PROC / 'sortino_values.csv', index=False)
-print(f"  ✅ sortino_values.csv  {len(sortino_df)} rows")
+# ── Task 4: Sortino Ratio ─────────────────────────────────────
+print(f"\n--- Task 4: Sortino Ratio ---")
+sortino_rows = []
+for code, grp in nav.groupby("amfi_code"):
+    r = grp["daily_return"].dropna()
+    if len(r) < 30:
+        continue
+    excess       = r.mean() - daily_rf
+    downside_std = r[r < 0].std()
+    sortino      = round((excess / downside_std * np.sqrt(TRADING_DAYS)), 4) if downside_std > 0 else 0
+    sortino_rows.append({"amfi_code": code, "sortino_ratio": sortino})
+sortino_df = pd.DataFrame(sortino_rows)
+sortino_df.to_csv(os.path.join(PROC_DIR, "sortino_values.csv"), index=False)
+print(f"  sortino_values.csv saved")
 
-# ── Task 5: Alpha & Beta ──────────────────────────────────────────────────────
-print("\n--- Task 5: Alpha & Beta ---")
-bench_ret = bench[['date','Nifty100']].copy()
-bench_ret['bench_return'] = bench_ret['Nifty100'].pct_change()
-bench_ret = bench_ret.dropna()
-rows = []
-for code, g in nav.groupby('amfi_code'):
-    g2 = g[['date','daily_return']].dropna()
-    m  = g2.merge(bench_ret[['date','bench_return']], on='date', how='inner')
-    if len(m) < 60: continue
-    slope, intercept, r_val, _, _ = stats.linregress(m['bench_return'], m['daily_return'])
-    rows.append({'amfi_code':code,'alpha':round(intercept*TRADING_DAYS*100,4),'beta':round(slope,4),'r_squared':round(r_val**2,4)})
-ab_df = pd.DataFrame(rows).merge(fm[['amfi_code','scheme_name','sub_category']], on='amfi_code', how='left')
-ab_df.to_csv(PROC / 'alpha_beta.csv', index=False)
-print(f"  ✅ alpha_beta.csv  {len(ab_df)} rows")
-print(ab_df.nlargest(5,'alpha')[['scheme_name','alpha','beta']].to_string(index=False))
+# ── Task 5: Alpha & Beta ──────────────────────────────────────
+print(f"\n--- Task 5: Alpha & Beta ---")
+ab_rows = []
+for code, grp in nav.groupby("amfi_code"):
+    merged = grp[["date","daily_return"]].merge(bench[["date","bench_return"]], on="date", how="inner")
+    merged.dropna(inplace=True)
+    if len(merged) < 60:
+        continue
+    slope, intercept, r_val, p_val, _ = stats.linregress(
+        merged["bench_return"], merged["daily_return"])
+    alpha = round(intercept * TRADING_DAYS * 100, 4)
+    beta  = round(slope, 4)
+    ab_rows.append({"amfi_code": code, "alpha": alpha, "beta": beta, "r_squared": round(r_val**2, 4)})
+ab_df = pd.DataFrame(ab_rows)
+ab_df.to_csv(os.path.join(PROC_DIR, "alpha_beta.csv"), index=False)
+print(f"  alpha_beta.csv saved  {len(ab_df)} funds")
+print(f"  Top Alpha funds:")
+print(ab_df.nlargest(5, "alpha")[["amfi_code","alpha","beta","r_squared"]].to_string(index=False))
 
-# ── Task 6: Max Drawdown ──────────────────────────────────────────────────────
-print("\n--- Task 6: Maximum Drawdown ---")
-rows = []
-for code, g in nav.groupby('amfi_code'):
-    g = g.sort_values('date')
-    dd = (g['nav'] - g['nav'].cummax()) / g['nav'].cummax() * 100
-    rows.append({'amfi_code':code,'max_drawdown_pct':round(dd.min(),2)})
-dd_df = pd.DataFrame(rows).merge(fm[['amfi_code','scheme_name','sub_category']], on='amfi_code', how='left')
-dd_df.to_csv(PROC / 'max_drawdown.csv', index=False)
-print(f"  ✅ max_drawdown.csv  {len(dd_df)} rows")
-print(dd_df.nsmallest(5,'max_drawdown_pct')[['scheme_name','max_drawdown_pct']].to_string(index=False))
+# ── Task 6: Max Drawdown ──────────────────────────────────────
+print(f"\n--- Task 6: Max Drawdown ---")
+dd_rows = []
+for code, grp in nav.groupby("amfi_code"):
+    nav_s   = grp["nav"].dropna()
+    if len(nav_s) < 10:
+        continue
+    rolling_max = nav_s.cummax()
+    drawdown    = (nav_s / rolling_max - 1)
+    max_dd      = round(drawdown.min() * 100, 4)
+    dd_rows.append({"amfi_code": code, "max_drawdown_pct": max_dd})
+dd_df = pd.DataFrame(dd_rows)
+dd_df.to_csv(os.path.join(PROC_DIR, "max_drawdown.csv"), index=False)
+print(f"  max_drawdown.csv saved")
 
-# ── Task 7: Scorecard ─────────────────────────────────────────────────────────
-print("\n--- Task 7: Fund Scorecard ---")
-score_df = cagr_df[['amfi_code','scheme_name','sub_category','fund_house','cagr_3yr']].copy()
-score_df = score_df.merge(sharpe_df[['amfi_code','sharpe_ratio']], on='amfi_code', how='left')
-score_df = score_df.merge(ab_df[['amfi_code','alpha']], on='amfi_code', how='left')
-score_df = score_df.merge(dd_df[['amfi_code','max_drawdown_pct']], on='amfi_code', how='left')
-score_df = score_df.merge(fm[['amfi_code','expense_ratio_pct']], on='amfi_code', how='left')
-score_df['composite_score'] = (
-    score_df['cagr_3yr'].rank(pct=True)          * 0.30 +
-    score_df['sharpe_ratio'].rank(pct=True)       * 0.25 +
-    score_df['alpha'].rank(pct=True)              * 0.20 +
-    (1-score_df['expense_ratio_pct'].rank(pct=True)) * 0.15 +
-    (1-score_df['max_drawdown_pct'].rank(pct=True))  * 0.10
-) * 100
-score_df = score_df.sort_values('composite_score', ascending=False).reset_index(drop=True)
-score_df['rank'] = range(1, len(score_df)+1)
-score_df['composite_score'] = score_df['composite_score'].round(2)
-score_df.to_csv(PROC / 'fund_scorecard.csv', index=False)
-print(f"  ✅ fund_scorecard.csv  {len(score_df)} rows")
-print(score_df.head(10)[['rank','scheme_name','composite_score','cagr_3yr','sharpe_ratio']].to_string(index=False))
+# ── Task 7: Fund Scorecard ────────────────────────────────────
+print(f"\n--- Task 7: Fund Scorecard ---")
+score_df = (
+    cagr_df[["amfi_code","cagr_3yr_pct"]]
+    .merge(sharpe_df[["amfi_code","sharpe_ratio","volatility_pct"]], on="amfi_code", how="outer")
+    .merge(ab_df[["amfi_code","alpha","beta"]], on="amfi_code", how="outer")
+    .merge(dd_df[["amfi_code","max_drawdown_pct"]], on="amfi_code", how="outer")
+    .merge(fm[["amfi_code","scheme_name","fund_house","category","sub_category","expense_ratio_pct"]], on="amfi_code", how="left")
+)
+score_df.dropna(subset=["cagr_3yr_pct","sharpe_ratio"], inplace=True)
 
-# ── Task 8: Chart ─────────────────────────────────────────────────────────────
-print("\n--- Task 8: Benchmark Chart ---")
-sns.set_theme(style='darkgrid')
-top5 = score_df.head(5)
-cutoff = nav['date'].max() - pd.DateOffset(years=3)
-fig, axes = plt.subplots(2,1,figsize=(14,12))
+def rank_score(series, ascending=False):
+    return series.rank(ascending=ascending, pct=True) * 100
 
-ax = axes[0]
-for _, row in top5.iterrows():
-    g = nav[(nav['amfi_code']==row['amfi_code']) & (nav['date']>=cutoff)].sort_values('date')
-    if len(g) > 0:
-        ax.plot(g['date'], g['nav']/g['nav'].iloc[0]*100, label=row['scheme_name'].split(' Fund')[0][:22], linewidth=2)
-bench3 = bench[bench['date']>=cutoff]
-ax.plot(bench3['date'], bench3['Nifty50']/bench3['Nifty50'].iloc[0]*100, 'k--', label='Nifty50', linewidth=2)
-ax.plot(bench3['date'], bench3['Nifty100']/bench3['Nifty100'].iloc[0]*100, 'gray', linestyle=':', label='Nifty100', linewidth=2)
-ax.set_title('Top 5 Funds vs Benchmark — 3 Year Performance', fontsize=13, fontweight='bold')
-ax.set_ylabel('Indexed Return (Base=100)')
-ax.legend(fontsize=8)
+score_df["score_3yr"]    = rank_score(score_df["cagr_3yr_pct"])
+score_df["score_sharpe"] = rank_score(score_df["sharpe_ratio"])
+score_df["score_alpha"]  = rank_score(score_df["alpha"].fillna(0))
+score_df["score_er"]     = rank_score(score_df["expense_ratio_pct"].fillna(1.5), ascending=True)
+score_df["score_dd"]     = rank_score(score_df["max_drawdown_pct"].fillna(-20), ascending=True)
 
-ax2 = axes[1]
-colors = plt.cm.RdYlGn(np.linspace(0.3,0.9,10))
-top10 = score_df.head(10)
-bars = ax2.barh([n.split(' Fund')[0][:28] for n in top10['scheme_name']], top10['composite_score'], color=colors)
-for bar, val in zip(bars, top10['composite_score']):
-    ax2.text(bar.get_width()+0.3, bar.get_y()+bar.get_height()/2, f'{val:.1f}', va='center', fontsize=9, fontweight='bold')
-ax2.set_title('Fund Scorecard — Top 10', fontsize=13, fontweight='bold')
-ax2.set_xlabel('Composite Score (0-100)')
-ax2.invert_yaxis()
+score_df["composite_score"] = (
+    score_df["score_3yr"]    * 0.30 +
+    score_df["score_sharpe"] * 0.25 +
+    score_df["score_alpha"]  * 0.20 +
+    score_df["score_er"]     * 0.15 +
+    score_df["score_dd"]     * 0.10
+).round(1)
 
+score_df.sort_values("composite_score", ascending=False, inplace=True)
+score_df["rank"] = range(1, len(score_df) + 1)
+score_df.to_csv(os.path.join(PROC_DIR, "fund_scorecard.csv"), index=False)
+print(f"  fund_scorecard.csv saved  {len(score_df)} funds")
+print(f"\n  TOP 10 FUND SCORECARD:")
+cols = ["rank","scheme_name","cagr_3yr_pct","sharpe_ratio","alpha","composite_score"]
+print(score_df.head(10)[cols].to_string(index=False))
+
+# ── Task 8: Benchmark Chart ───────────────────────────────────
+print(f"\n--- Task 8: Benchmark Comparison Chart ---")
+top5 = score_df.head(5)["amfi_code"].tolist()
+fig, ax = plt.subplots(figsize=(14, 6))
+for code in top5:
+    grp  = nav[nav["amfi_code"] == code].sort_values("date")
+    name = fm[fm["amfi_code"] == code]["scheme_name"].values
+    label = str(name[0]).split(" Fund")[0][:22] if len(name) else code
+    base  = grp["nav"].iloc[0]
+    ax.plot(grp["date"], grp["nav"] / base * 100,
+            linewidth=1.8, label=label, alpha=0.9)
+
+bench_filt = bench[(bench["date"] >= nav["date"].min()) & (bench["date"] <= nav["date"].max())]
+base_b = bench_filt["nifty100"].iloc[0]
+ax.plot(bench_filt["date"], bench_filt["nifty100"] / base_b * 100,
+        color="gray", linewidth=2, linestyle="--", label="Nifty 100 (Benchmark)", alpha=0.8)
+
+ax.set_title("Top 5 Funds vs Nifty 100 — Indexed to 100", fontsize=13, fontweight="bold")
+ax.set_xlabel("Date"); ax.set_ylabel("Indexed Return (Base=100)")
+ax.legend(fontsize=9, bbox_to_anchor=(1.01, 1)); ax.grid(True, alpha=0.4)
 plt.tight_layout()
-plt.savefig(str(FIGS/'benchmark_chart.png'), dpi=120, bbox_inches='tight')
+fig.savefig(os.path.join(REP_DIR, "benchmark_chart.png"), dpi=120, bbox_inches="tight")
 plt.close()
-print(f"  ✅ benchmark_chart.png saved")
+print(f"  benchmark_chart.png saved")
 
-print("\n" + "="*60)
-print("  ✅ DAY 4 COMPLETE!")
-print("="*60)
-print("  Next: git add -A && git commit -m 'Day 4: Performance analytics complete' && git push origin main")
+print(f"\n{SEP}")
+print(f"  DAY 4 COMPLETE — All performance metrics computed")
+print(f"  Files in data/processed/:")
+for f in ["returns_computed.csv","cagr_report.csv","sharpe_values.csv",
+          "sortino_values.csv","alpha_beta.csv","max_drawdown.csv","fund_scorecard.csv"]:
+    p = os.path.join(PROC_DIR, f)
+    if os.path.exists(p):
+        rows = len(open(p).readlines()) - 1
+        print(f"    {f:<30} {rows} rows")
+print(SEP)
